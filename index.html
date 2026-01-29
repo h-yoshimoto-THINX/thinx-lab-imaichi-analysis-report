@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顧客離反傾向分析ダッシュボード - 今市店</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+    </script>
+    <style>
+        :root {
+            --navy-bg: #001f3f;
+            --navy-card: #002b55;
+            --navy-light: #003366;
+            --gold: #c5a059;
+            --text-white: #ffffff;
+            --text-gray: #b0c4de;
+            --bg-body: #f0f2f5;
+        }
+        body { font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", sans-serif; background-color: var(--bg-body); margin: 0; color: #333; }
+        
+        /* Header */
+        header { background-color: var(--navy-bg); color: var(--text-white); padding: 20px 40px; border-bottom: 3px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 22px; letter-spacing: 1px; }
+        .date-badge { background: var(--gold); color: var(--navy-bg); padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 13px; }
+
+        /* Dashboard Layout */
+        .dashboard-container { padding: 30px; max-width: 1200px; margin: 0 auto; }
+        .grid-kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .kpi-card { background: var(--navy-card); color: var(--text-white); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid var(--gold); }
+        .kpi-card .label { font-size: 12px; color: var(--text-gray); font-weight: bold; text-transform: uppercase; }
+        .kpi-card .value { font-size: 32px; font-weight: bold; margin: 5px 0; color: var(--gold); }
+        .kpi-card .subtext { font-size: 11px; opacity: 0.8; }
+
+        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .chart-container { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .chart-container h3 { margin-top: 0; font-size: 16px; border-left: 4px solid var(--navy-bg); padding-left: 10px; margin-bottom: 20px; }
+
+        /* Flowchart */
+        .flow-section { background: white; padding: 30px; border-radius: 8px; margin-bottom: 30px; text-align: center; }
+        .mermaid { margin-top: 20px; }
+
+        /* Analysis Text Area */
+        .analysis-section { background: white; padding: 40px; border-radius: 8px; line-height: 1.8; margin-bottom: 30px; }
+        .analysis-section h2 { color: var(--navy-light); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 40px; }
+        .analysis-section h3 { color: var(--navy-light); font-size: 18px; margin-top: 25px; }
+        .alert-box { background: #fff9e6; border-left: 5px solid var(--gold); padding: 20px; margin: 20px 0; border-radius: 4px; }
+
+        /* Table Style */
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+        th { background-color: var(--navy-bg); color: #ffffff; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        
+        .tag-p { background: #e1f5fe; color: #0288d1; padding: 4px 10px; border-radius: 4px; font-weight: bold; }
+        .tag-s { background: #fff3e0; color: #f57c00; padding: 4px 10px; border-radius: 4px; font-weight: bold; }
+        .tag-ps { background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 4px; font-weight: bold; }
+
+        /* Chart Canvas Size Control */
+        .analysis-chart-box { max-width: 600px; margin: 20px 0; }
+
+        /* Footer */
+        .strategy-footer { background: var(--navy-bg); color: white; padding: 40px; border-radius: 8px; }
+        .strategy-footer h2 { color: var(--gold); margin-top: 0; border: none; }
+        .strategy-item { margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .strategy-item strong { display: block; margin-bottom: 5px; font-size: 17px; color: var(--gold); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>顧客離反傾向分析・戦略ダッシュボード</h1>
+    <div class="date-badge">今市店 | 2025年10月-12月実績</div>
+</header>
+
+<div class="dashboard-container">
+    
+    <div class="grid-kpi">
+        <div class="kpi-card">
+            <div class="label">総離反会員数</div>
+            <div class="value">343</div>
+            <div class="subtext">前四半期比 分析対象</div>
+        </div>
+        <div class="kpi-card">
+            <div class="label">AIアラート捕捉率</div>
+            <div class="value">56.3%</div>
+            <div class="subtext">193名が事前に予測対象</div>
+        </div>
+        <div class="kpi-card">
+            <div class="label">Sオンリー遊技比率</div>
+            <div class="value">53.4%</div>
+            <div class="subtext">スロット特化層の離脱が顕著</div>
+        </div>
+        <div class="kpi-card">
+            <div class="label">平日平均来店回数</div>
+            <div class="value">2.57</div>
+            <div class="subtext">休日(1.72)の約1.5倍</div>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <div class="chart-container">
+            <h3>離反顧客属性別のAIアラート検知状況</h3>
+            <canvas id="alertChart" height="150"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3>遊技種別構成比</h3>
+            <canvas id="machinePieChart"></canvas>
+        </div>
+    </div>
+
+    <div class="flow-section">
+        <h3>顧客属性遷移と離反フローの可視化</h3>
+        <div class="mermaid">
+            graph LR
+                A[絆継続会員] -->|45.9% 検知| B(AIアラート作動)
+                A -->|54.1% 漏れ| C{サイレント離反}
+                D[復活会員] -->|再評価失敗| C
+                E[新規/低頻度] -->|定着失敗| C
+                B --> F[対策打込可能]
+                C --> G[離反確定]
+                F --> G
+                style A fill:#e1f5fe,stroke:#01579b
+                style C fill:#ffebee,stroke:#c62828
+                style G fill:#333,stroke:#000,color:#fff
+        </div>
+    </div>
+
+    <div class="analysis-section">
+        <h2>1. 来店パターンの傾向：平日・休日双方での離脱傾向</h2>
+        <p>今市店の離反会員は、平日の平均来店回数が2.57回と非常に高く、休日も1.72回と安定した来店があった層が離脱しています。高島平店に比べ、休日も頻繁に利用していた「ヘビーユーザー寄り」の顧客が離反している点が特徴です。特に昼間来店回数が記録されている層は限定的ですが、来店頻度そのものが高水準で維持されていた顧客が、あるタイミングで一斉に離反するリスクを抱えています。</p>
+        
+        <div class="analysis-chart-box">
+            <canvas id="visitFreqChart" height="100"></canvas>
+        </div>
+
+        <h2>2. 遊技種別とスタイルの偏り：Sオンリーの圧倒的シェア</h2>
+        <p>遊技スタイルでは、Sオンリー（スロットのみ）ユーザーが53.4%を占め、今市店における離反の主因となっています。特に20円スロットメインのユーザーが208名と突出しており、スロットの運用状況が離反に直結しやすい構造です。一方で、P&S両方を回遊するユーザーの平均投資額は約6.6万円と最も高く、この層の離反は売上インパクトが非常に大きいと言えます。</p>
+
+        <div class="analysis-chart-box">
+            <canvas id="playStyleBarChart" height="120"></canvas>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>遊技スタイル</th>
+                    <th>構成比</th>
+                    <th>平均投資額</th>
+                    <th>分析コメント</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="tag-s">Sオンリー</span></td>
+                    <td>53.4%</td>
+                    <td>約30,300円</td>
+                    <td>離反の過半数。スロットの出玉期待感に敏感な層。</td>
+                </tr>
+                <tr>
+                    <td><span class="tag-p">Pオンリー</span></td>
+                    <td>28.3%</td>
+                    <td>約13,600円</td>
+                    <td>投資を抑えたパチンコ専属層。比較的早期に見切りをつける。</td>
+                </tr>
+                <tr>
+                    <td><span class="tag-ps">P&S両方</span></td>
+                    <td>18.1%</td>
+                    <td>約66,100円</td>
+                    <td>投資意欲が最も高い優良客層。離反時の損失が最大。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>3. 離反前属性の推移：絆客のサイレント離反</h2>
+        <div class="analysis-chart-box">
+            <canvas id="priorAttrChart" height="150"></canvas>
+        </div>
+
+        <h3>① 絆継続会員の継続的な流出</h3>
+        <p>1ヶ月前まで「絆継続会員」であった顧客が61名（全体の約18%）離反しています。特に、過去3ヶ月以上にわたり絆属性を維持していた37名が離反しており、長年の関係性が崩れた際の影響は深刻です。</p>
+        <h3>② 継続会員からの転落パターン</h3>
+        <p>1ヶ月前に「継続会員」であった層が74名と最も多く、日常的な来店があった中での離反が目立ちます。特に1ヶ月復活会員がその後定着せず離反するケース（12名）も確認されています。</p>
+
+        <h2>4. AIアラートの的中精度と活用の現状</h2>
+        <div class="alert-box">
+            <strong>【重要】AIアラート捕捉率は56.3%に留まる。</strong><br>
+            特に絆継続会員における検知率は45.9%と低く、数値化されにくい「お店への不満」や「他店への魅力向上」による離反が先行しています。
+        </div>
+    </div>
+
+    <div class="strategy-footer">
+        <h2>次期に向けた重点実施事項</h2>
+        <div class="strategy-item">
+            <strong>1. スロット特化層への「期待感」の再醸成</strong>
+            <p>離反の半数以上を占めるSオンリー層に対し、メイン機種（20S）の遊技体験を向上させる施策を最優先します。特に高頻度で来店していた顧客が「負け込み」を感じる前に介入する運用が必要です。</p>
+        </div>
+        <div class="strategy-item">
+            <strong>2. P&S回遊層（最高単価客）の離反徹底防止</strong>
+            <p>平均投資額が最も高い「回遊層」の離反を防ぐため、特定の種別だけでなく、店舗全体の利便性や接客レベルを高め、店舗そのもののファンとしてつなぎ止めます。</p>
+        </div>
+        <div class="strategy-item">
+            <strong>3. 絆客への「予兆なき離反」への現場介入</strong>
+            <p>AIが検知しきれない絆客の離反に対し、現場スタッフによる「最近のお顔ぶれ」の確認と、一定期間来店が空いた際の即時個別アプローチを強化してください。</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // 1. Visit Frequency Chart (Horizontal Bar)
+    new Chart(document.getElementById('visitFreqChart'), {
+        type: 'bar',
+        data: {
+            labels: ['平日来店回数', '休日来店回数'],
+            datasets: [{
+                label: '平均来店回数',
+                data: [2.57, 1.72],
+                backgroundColor: ['#003366', '#c5a059'],
+                borderRadius: 5
+            }]
+        },
+        options: { indexAxis: 'y', plugins: { legend: { display: false } } }
+    });
+
+    // 2. Play Style Bar Chart (Horizontal Bar)
+    new Chart(document.getElementById('playStyleBarChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Sオンリー', 'Pオンリー', 'P&S両方'],
+            datasets: [{
+                label: '構成比 (%)',
+                data: [53.4, 28.3, 18.1],
+                backgroundColor: ['#f57c00', '#0288d1', '#475569'],
+                borderRadius: 5
+            }]
+        },
+        options: { indexAxis: 'y', plugins: { legend: { display: false } } }
+    });
+
+    // 3. Prior Attribute Chart (Vertical Bar)
+    new Chart(document.getElementById('priorAttrChart'), {
+        type: 'bar',
+        data: {
+            labels: ['継続会員', '絆継続会員', '1ヶ月復活', '新規会員', '離脱復活'],
+            datasets: [{
+                label: '1ヶ月前の属性（人数）',
+                data: [74, 56, 15, 14, 15],
+                backgroundColor: '#003366',
+                borderRadius: 5
+            }]
+        },
+        options: { plugins: { legend: { display: false } } }
+    });
+
+    // Existing Charts
+    new Chart(document.getElementById('machinePieChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['20Sメイン', '1Pメイン', '4Pメイン', '5Sメイン'],
+            datasets: [{
+                data: [208, 68, 46, 21],
+                backgroundColor: ['#003366', '#c5a059', '#b0c4de', '#475569']
+            }]
+        },
+        options: { plugins: { legend: { position: 'bottom' } } }
+    });
+
+    new Chart(document.getElementById('alertChart'), {
+        type: 'bar',
+        data: {
+            labels: ['継続', '絆継続', '離脱復活', '1ヶ月復活', '2ヶ月復活', '新規'],
+            datasets: [
+                { label: 'AI検知あり', data: [64, 28, 25, 30, 22, 17], backgroundColor: '#003366' },
+                { label: 'AI検知なし', data: [56, 33, 16, 16, 7, 20], backgroundColor: '#e0e0e0' }
+            ]
+        },
+        options: { scales: { y: { stacked: true }, x: { stacked: true } } }
+    });
+</script>
+
+</body>
+</html>
